@@ -37,6 +37,7 @@ class RBNode(BinarySearchTree.Node):
         if(self.left!=None and self.left.verifyBlackHeight(height)==False):
             return False
 
+
         return True
 
 
@@ -46,6 +47,7 @@ class RedBlackBST(BinarySearchTree.BST):
         BinarySearchTree.BST.__init__(self)
     def __repr__(self):
         return self.printPart(self.root)
+
     def printPart(self,node):
         if(node==None):
              return "X"
@@ -58,7 +60,7 @@ class RedBlackBST(BinarySearchTree.BST):
         width=sideWidth+len(str(node.key))+sideWidth
         halfWidth=math.floor(sideWidth/2)
 
-        string=halfWidth*" "+"|"+(sideWidth-halfWidth-1)*"-"+str(node.isRed)+(sideWidth-halfWidth-1)*"-"+"|"+halfWidth*" "+"\n"
+        string=halfWidth*" "+"/"+(sideWidth-halfWidth-1)*"-"+str(node.key)+(sideWidth-halfWidth-1)*"-"+"\\"+halfWidth*" "+"\n"
 
         leftArr=leftString.split('\n')
         rightArr=rightString.split("\n")
@@ -85,14 +87,6 @@ class RedBlackBST(BinarySearchTree.BST):
         return string[:-1]
 
 
-    def rotateLeft(self,node):
-        if(self.root.right==None ):
-            return
-        newRoot=self.root.right
-        self.root.right=newRoot.left
-        newRoot.left=self.root
-        self.root=newRoot
-
     def put(self, keyIn, valueIn):
         if self.root.getKey() == None:
             self.root = RBNode(keyIn, valueIn)
@@ -115,7 +109,10 @@ class RedBlackBST(BinarySearchTree.BST):
             if not node.isRed:
                 blacks+=1
         return blacks
-
+def isGParent(node):
+    if(node.left!=None and (node.left.right!=None or node.left.left!=None)) or (node.right!=None and (node.right.left!=None or node.right.right!=None)):
+        return True;
+    return False
 def isRBBST(tree):
     if(tree.root.isRed):
         return False
@@ -135,14 +132,14 @@ def isRBBSTPart(node):
 
 def rotateRight(node):
     if(node.left==None):
-        return
+        return None
     newNode=node.left
     node.left=newNode.right
     newNode.right=node
     return newNode
 def rotateLeft(node):
     if(node.right==None):
-        return
+        return None
     newNode=node.right
     node.right=newNode.left
     newNode.left=node
@@ -162,6 +159,9 @@ print(str(x)+"\n\n\n")
 x.root.right=rotateLeft(x.root.right)
 print(str(x)+"\n\n\n")
 
+print(isGParent(x.root))
+print(isGParent(x.root.right))
+print(isGParent(x.root.right.right))
 
 
 #Make the tree from the website

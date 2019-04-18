@@ -11,13 +11,6 @@ class RBNode(BinarySearchTree.Node):
         self.isRed=isRed
     def __repr__(self):
         return "Node{ key : " + str(self.key) + ", value : " + str(self.value) + ", isRed:"+str(self.isRed)+"}"
-
-
-
-
-
-
-
     def size(self):
         size=1
         if(self.left!=None):
@@ -36,8 +29,6 @@ class RBNode(BinarySearchTree.Node):
             return False
         if(self.left!=None and self.left.verifyBlackHeight(height)==False):
             return False
-
-
         return True
 
 
@@ -109,6 +100,84 @@ class RedBlackBST(BinarySearchTree.BST):
             if not node.isRed:
                 blacks+=1
         return blacks
+    def rotateRight(node):
+        if(node.left==None):
+            return None
+        newNode=node.left
+        node.left=newNode.right
+        newNode.right=node
+        return newNode
+    def rotateLeft(node):
+        if(node.right==None):
+            return None
+        newNode=node.right
+        node.right=newNode.left
+        newNode.left=node
+        return newNode
+    def getKeyUncle(self,currNode,node):
+        if currNode == None:
+            return None
+        if isGParent(currNode) and (currNode.right.right==node or currNode.right.left==node):
+            return currNode.left
+        elif isGParent(currNode) and (currNode.left.left==node or currNode.left.right==node):
+            return currNode.right
+        elif currNode.getKey() < node.key:
+            if currNode.getRight() == None:
+                return None
+            return self.getKeyUncle(currNode.getRight(), node)
+        elif currNode.getKey() > node.key:
+            if currNode.getLeft() == None:
+                return None
+            return self.getKeyUncle(currNode.getLeft(), node)
+    def getKeyGParent(self,currNode,node):
+        if currNode == None:
+            return None
+        if isGParent(currNode) and (currNode.right.right==node or currNode.right.left==node):
+            return currNode
+        elif isGParent(currNode) and (currNode.left.left==node or currNode.left.right==node):
+            return currNode
+        elif currNode.getKey() < node.key:
+            if currNode.getRight() == None:
+                return None
+            return self.getKeyGParent(currNode.getRight(), node)
+        elif currNode.getKey() > node.key:
+            if currNode.getLeft() == None:
+                return None
+            return self.getKeyGParent(currNode.getLeft(), node)
+    def getKeyParent(self,currNode, node):
+        if currNode == None:
+            return None
+        if (currNode.right!=None and currNode.right==node) or (currNode.left!=None and currNode.left==node):
+            return currNode
+        elif currNode.getKey() < node.key:
+            if currNode.getRight() == None:
+                return None
+            return self.getKeyParent(currNode.getRight(), node)
+        elif currNode.getKey() > node.key:
+            if currNode.getLeft() == None:
+                return None
+            return self.getKeyParent(currNode.getLeft(), node)
+    def uncleRedCase(self,key,value):
+        if(getKeyUncle(self.root,key).isRed):
+                self.getKeyUncle(self.root,key).isRed=False
+                self.getKeyParent(self.root,key).isRed=False
+                self.getKeyGParent(self.root,key).isRed=True
+
+                gParent=self.getKeyGParent(self.root,key)
+                self.uncleRedCase(gParent.key, gParent.value)
+    def insert(self,key,value):
+
+        BinarySearchTree.BST.put(RBNode(key,value))
+        if(self.root==node):
+            node.isRed=False
+        else:
+            if(getKeyUncle(self.root,key).isRed):
+                self.uncleRedCase(key,value)
+    
+
+
+
+        
 def isGParent(node):
     if(node.left!=None and (node.left.right!=None or node.left.left!=None)) or (node.right!=None and (node.right.left!=None or node.right.right!=None)):
         return True;
@@ -130,20 +199,7 @@ def isRBBSTPart(node):
     return True
 
 
-def rotateRight(node):
-    if(node.left==None):
-        return None
-    newNode=node.left
-    node.left=newNode.right
-    newNode.right=node
-    return newNode
-def rotateLeft(node):
-    if(node.right==None):
-        return None
-    newNode=node.right
-    node.right=newNode.left
-    newNode.left=node
-    return newNode
+
 
 x = RedBlackBST()
 x.put(10,1)
@@ -153,10 +209,13 @@ x.put(4,4)
 x.put(6,5)
 x.put(14,6)
 x.put(16,7)
+
 print(str(x)+"\n\n\n")
-x.root=rotateRight(x.root)
+print(x.getKeyGParent(x.root,x.root.right.right))
+"""
+x.root=RedBlackBST.rotateRight(x.root)
 print(str(x)+"\n\n\n")
-x.root.right=rotateLeft(x.root.right)
+x.root.right=RedBlackBST.rotateLeft(x.root.right)
 print(str(x)+"\n\n\n")
 
 print(isGParent(x.root))
@@ -182,4 +241,4 @@ y.root.right.left.isRed=False
 y.root.right.right.isRed=False
 print(isRBBST(y))
 y.root.right.isRed=False
-print(isRBBST(y))
+print(isRBBST(y))"""
